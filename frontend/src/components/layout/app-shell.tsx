@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router'
+import { CreateIssueDialog } from '@/components/issue/create-issue-dialog'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useHotkey } from '@/hooks/use-hotkey'
@@ -38,7 +39,10 @@ export function AppShell() {
               <Skeleton className="h-32 w-full" />
             </div>
           ) : project ? (
-            <Outlet />
+            <>
+              <Outlet />
+              <CreateIssueDialog />
+            </>
           ) : (
             <NoProject />
           )}

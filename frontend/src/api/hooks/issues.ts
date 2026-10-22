@@ -1,5 +1,13 @@
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
-import { api, unwrap, type Issue, type IssueCreate, type IssueDetail, type IssueMove, type IssueUpdate } from '../client'
+import {
+  api,
+  unwrap,
+  type Issue,
+  type IssueCreate,
+  type IssueDetail,
+  type IssueMove,
+  type IssueUpdate,
+} from '../client'
 import type { paths } from '../schema'
 import { qk } from '../keys'
 

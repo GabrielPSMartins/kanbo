@@ -13,8 +13,7 @@ export function useProjects() {
 export function useCreateProject() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (body: components['schemas']['ProjectCreate']) =>
-      unwrap(api.POST('/api/v1/projects', { body })),
+    mutationFn: (body: components['schemas']['ProjectCreate']) => unwrap(api.POST('/api/v1/projects', { body })),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.projects }),
   })
 }

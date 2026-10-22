@@ -28,6 +28,7 @@ lint:
 
 format:
 	$(BACKEND) uv run ruff check --fix . && uv run ruff format .
+	@if [ -d frontend/node_modules ]; then $(FRONTEND) npm run format; fi
 
 migrate:
 	$(BACKEND) uv run alembic upgrade head

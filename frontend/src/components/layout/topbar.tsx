@@ -49,15 +49,16 @@ export function Topbar({ onMenu, crumb }: { onMenu: () => void; crumb?: ReactNod
         <span className="flex-1 text-left">Buscar…</span>
         <Kbd>Ctrl K</Kbd>
       </button>
-      <Button variant="ghost" size="icon-sm" className="sm:hidden" onClick={() => setPaletteOpen(true)} aria-label="Buscar">
-        <Search />
-      </Button>
       <Button
         variant="ghost"
         size="icon-sm"
-        onClick={toggle}
-        aria-label="Alternar tema"
+        className="sm:hidden"
+        onClick={() => setPaletteOpen(true)}
+        aria-label="Buscar"
       >
+        <Search />
+      </Button>
+      <Button variant="ghost" size="icon-sm" onClick={toggle} aria-label="Alternar tema">
         {theme === 'dark' ? <Sun /> : <Moon />}
       </Button>
       <Button size="sm" onClick={() => openCreateIssue()} disabled={!project}>

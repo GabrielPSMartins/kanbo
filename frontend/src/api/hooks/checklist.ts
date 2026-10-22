@@ -46,7 +46,9 @@ export function useChecklist(issue: IssueDetail) {
 
   const remove = useMutation({
     mutationFn: (id: number) =>
-      unwrap(api.DELETE('/api/v1/issues/{issue_id}/checklist/{item_id}', { params: { path: { ...path, item_id: id } } })),
+      unwrap(
+        api.DELETE('/api/v1/issues/{issue_id}/checklist/{item_id}', { params: { path: { ...path, item_id: id } } }),
+      ),
     onMutate: (id) => patchCache((items) => items.filter((c) => c.id !== id)),
     onSettled: settle,
   })

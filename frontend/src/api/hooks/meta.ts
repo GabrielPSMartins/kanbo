@@ -72,7 +72,8 @@ export function useLabelMutations(projectId: number) {
       onSuccess,
     }),
     remove: useMutation({
-      mutationFn: (id: number) => unwrap(api.DELETE('/api/v1/labels/{label_id}', { params: { path: { label_id: id } } })),
+      mutationFn: (id: number) =>
+        unwrap(api.DELETE('/api/v1/labels/{label_id}', { params: { path: { label_id: id } } })),
       onSuccess,
     }),
   }

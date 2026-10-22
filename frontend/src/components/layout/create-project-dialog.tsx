@@ -59,7 +59,9 @@ export function CreateProjectDialog({ open, onOpenChange }: { open: boolean; onO
               onChange={(e) => setKey(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''))}
               placeholder="TCC"
             />
-            <p className="text-xs text-muted-foreground">Issues serão numeradas como {key || 'KEY'}-1, {key || 'KEY'}-2…</p>
+            <p className="text-xs text-muted-foreground">
+              Issues serão numeradas como {key || 'KEY'}-1, {key || 'KEY'}-2…
+            </p>
           </div>
           <DialogFooter>
             <Button type="submit" disabled={!name.trim() || key.length < 2 || create.isPending}>
@@ -73,7 +75,12 @@ export function CreateProjectDialog({ open, onOpenChange }: { open: boolean; onO
 }
 
 function suggestKey(name: string) {
-  const words = name.normalize('NFD').replace(/[^A-Za-z0-9 ]/g, '').trim().split(/\s+/).filter(Boolean)
+  const words = name
+    .normalize('NFD')
+    .replace(/[^A-Za-z0-9 ]/g, '')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
   const key = words.length > 1 ? words.map((w) => w[0]).join('') : (words[0] ?? '').slice(0, 4)
   return key.toUpperCase().slice(0, 6)
 }

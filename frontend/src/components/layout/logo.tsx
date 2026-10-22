@@ -19,7 +19,10 @@ export function Logo() {
 export function ProjectAvatar({ project, className }: { project: Pick<Project, 'key' | 'color'>; className?: string }) {
   return (
     <span
-      className={cn('grid size-5 shrink-0 place-items-center rounded-[5px] text-[10px] font-bold text-white', className)}
+      className={cn(
+        'grid size-5 shrink-0 place-items-center rounded-[5px] text-[10px] font-bold text-white',
+        className,
+      )}
       style={{ backgroundColor: project.color }}
     >
       {project.key.slice(0, 1)}

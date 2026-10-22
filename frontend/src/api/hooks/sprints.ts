@@ -42,7 +42,8 @@ export function useSprintMutations(projectId: number) {
     onSuccess,
   })
   const remove = useMutation({
-    mutationFn: (id: number) => unwrap(api.DELETE('/api/v1/sprints/{sprint_id}', { params: { path: { sprint_id: id } } })),
+    mutationFn: (id: number) =>
+      unwrap(api.DELETE('/api/v1/sprints/{sprint_id}', { params: { path: { sprint_id: id } } })),
     onSuccess,
   })
   const start = useMutation({
