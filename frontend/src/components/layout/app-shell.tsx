@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router'
+import { CommandPalette } from '@/components/command-palette'
 import { CreateIssueDialog } from '@/components/issue/create-issue-dialog'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -42,6 +43,7 @@ export function AppShell() {
             <>
               <Outlet />
               <CreateIssueDialog />
+              <CommandPalette />
             </>
           ) : (
             <NoProject />
