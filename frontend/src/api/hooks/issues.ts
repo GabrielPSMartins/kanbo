@@ -70,16 +70,26 @@ function patchListsOptimistically(qc: QueryClient, projectId: number, id: number
 export function useUpdateIssue(projectId: number) {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, body }: { id: number; body: IssueUpdate }) =>
+    // `key` opcional: permite atualizar de forma otimista o detalhe aberto no drawer
+    mutationFn: ({ id, body }: { id: number; key?: string; body: IssueUpdate }) =>
       unwrap(api.PATCH('/api/v1/issues/{issue_id}', { params: { path: { issue_id: id } }, body })),
-    onMutate: async ({ id, body }) => {
+    onMutate: async ({ id, key, body }) => {
       await qc.cancelQueries({ queryKey: qk.issues(projectId) })
       const snapshot = qc.getQueriesData<Issue[]>({ queryKey: qk.issues(projectId) })
       const { label_ids: _ignored, ...simple } = body
       patchListsOptimistically(qc, projectId, id, simple as Partial<Issue>)
-      return { snapshot }
+      let detail: IssueDetail | undefined
+      if (key) {
+        await qc.cancelQueries({ queryKey: qk.issue(key) })
+        detail = qc.getQueryData<IssueDetail>(qk.issue(key))
+        if (detail) qc.setQueryData<IssueDetail>(qk.issue(key), { ...detail, ...(simple as Partial<IssueDetail>) })
+      }
+      return { snapshot, detail, key }
     },
-    onError: (_err, _vars, ctx) => ctx?.snapshot.forEach(([key, data]) => qc.setQueryData(key, data)),
+    onError: (_err, _vars, ctx) => {
+      ctx?.snapshot.forEach(([k, data]) => qc.setQueryData(k, data))
+      if (ctx?.key && ctx.detail) qc.setQueryData(qk.issue(ctx.key), ctx.detail)
+    },
     onSuccess: (issue) => storeDetail(qc, issue),
     onSettled: () => invalidateProjectIssues(qc, projectId),
   })
