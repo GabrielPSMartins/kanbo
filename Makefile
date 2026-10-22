@@ -39,5 +39,4 @@ seed-reset: migrate
 	$(BACKEND) uv run python -m app.scripts.seed --reset
 
 gen-api: ## regenera os tipos TS a partir do OpenAPI do FastAPI
-	$(BACKEND) uv run python -m app.scripts.export_openapi ../frontend/openapi.json
-	$(FRONTEND) npx openapi-typescript openapi.json -o src/api/schema.d.ts
+	$(FRONTEND) npm run gen:api
