@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Kanbo
+*.db
+*.db-journal
+node_modules/
+frontend/dist/
+frontend/openapi.json
