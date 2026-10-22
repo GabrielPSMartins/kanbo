@@ -1,15 +1,18 @@
+import { lazy } from 'react'
 import { Navigate, Route, Routes, useLocation, useMatch } from 'react-router'
 import { AppShell } from '@/components/layout/app-shell'
 import { IssueDrawer } from '@/components/issue/issue-drawer'
 import type { DrawerState } from '@/hooks/use-open-issue'
-import BacklogPage from '@/pages/backlog'
-import BoardPage from '@/pages/board'
-import DashboardPage from '@/pages/dashboard'
-import EpicsPage from '@/pages/epics'
 import NotFoundPage from '@/pages/not-found'
-import SettingsPage from '@/pages/settings'
-import SprintDetailPage from '@/pages/sprint-detail'
-import SprintsPage from '@/pages/sprints'
+
+// páginas carregadas sob demanda (Recharts, dnd-kit e markdown ficam fora do bundle inicial)
+const DashboardPage = lazy(() => import('@/pages/dashboard'))
+const BacklogPage = lazy(() => import('@/pages/backlog'))
+const BoardPage = lazy(() => import('@/pages/board'))
+const SprintsPage = lazy(() => import('@/pages/sprints'))
+const SprintDetailPage = lazy(() => import('@/pages/sprint-detail'))
+const EpicsPage = lazy(() => import('@/pages/epics'))
+const SettingsPage = lazy(() => import('@/pages/settings'))
 
 export default function App() {
   const location = useLocation()

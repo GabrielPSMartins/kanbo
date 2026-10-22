@@ -2,9 +2,11 @@ import {
   closestCenter,
   getFirstCollision,
   KeyboardSensor,
-  PointerSensor,
+  MeasuringStrategy,
+  MouseSensor,
   pointerWithin,
   rectIntersection,
+  TouchSensor,
   useSensor,
   useSensors,
   type CollisionDetection,
@@ -67,7 +69,9 @@ export function useIssueDnd(containers: Containers, onDrop: (r: DropResult) => v
 
   const sensors = useSensors(
     // distância mínima para não confundir clique (abrir issue) com arraste
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    // no toque, arraste só após segurar (long-press) para não bloquear o scroll
+    useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 6 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
@@ -154,6 +158,8 @@ export function useIssueDnd(containers: Containers, onDrop: (r: DropResult) => v
     get: (id: number) => byId.get(id),
     dndProps: {
       sensors,
+      // re-mede os droppables a cada mudança: ao trocar de container o placeholder é um nó novo
+      measuring: { droppable: { strategy: MeasuringStrategy.Always } },
       collisionDetection,
       onDragStart,
       onDragOver,

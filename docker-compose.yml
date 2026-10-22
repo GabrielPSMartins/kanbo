@@ -1,0 +1,36 @@
+# Opcional: sobe API e frontend em containers (o fluxo principal é `make dev`).
+#   docker compose up
+# App em http://localhost:5173 · API em http://localhost:8000/docs
+services:
+  backend:
+    image: ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+    working_dir: /app
+    command: sh -c "uv sync && uv run alembic upgrade head && uv run python -m app.scripts.seed && uv run fastapi dev --host 0.0.0.0 --port 8000"
+    environment:
+      UV_PROJECT_ENVIRONMENT: /venv
+      DATABASE_URL: sqlite:////data/kanbo.db
+    volumes:
+      - ./backend:/app
+      - kanbo-data:/data
+      - kanbo-venv:/venv
+    ports:
+      - "8000:8000"
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      API_PROXY_TARGET: http://backend:8000
+    volumes:
+      - ./frontend:/app
+      - kanbo-node-modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  kanbo-data:
+  kanbo-venv:
+  kanbo-node-modules:

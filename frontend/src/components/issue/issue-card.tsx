@@ -19,7 +19,7 @@ export function IssueCardContent({ issue, epic, overlay }: Props) {
     >
       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
         <TypeIcon type={issue.type} />
-        <span className="tabular-nums">{issue.key}</span>
+        <span className="shrink-0 whitespace-nowrap tabular-nums">{issue.key}</span>
         {epic && (
           <span className="ml-auto flex min-w-0 items-center gap-1 truncate text-[11px]">
             <span className="size-2 shrink-0 rounded-sm" style={{ backgroundColor: epic.color }} />

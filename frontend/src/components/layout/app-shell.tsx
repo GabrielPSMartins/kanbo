@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router'
+import { Suspense, useState } from 'react'
+import { Outlet, useLocation } from 'react-router'
+import { ErrorBoundary } from '@/components/error-boundary'
 import { CommandPalette } from '@/components/command-palette'
 import { CreateIssueDialog } from '@/components/issue/create-issue-dialog'
 import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
@@ -15,6 +16,7 @@ export function AppShell() {
   const { project, isLoading } = useProjectContext()
   const { openCreateIssue, setPaletteOpen } = useUI()
   const [mobileNav, setMobileNav] = useState(false)
+  const { pathname } = useLocation()
 
   useHotkey('c', () => openCreateIssue(), { enabled: !!project })
   useHotkey('k', () => setPaletteOpen(true), { mod: true })
@@ -35,13 +37,15 @@ export function AppShell() {
         <Topbar onMenu={() => setMobileNav(true)} />
         <main className="min-h-0 flex-1 overflow-auto">
           {isLoading ? (
-            <div className="space-y-3 p-6">
-              <Skeleton className="h-8 w-48" />
-              <Skeleton className="h-32 w-full" />
-            </div>
+            <PageSkeleton />
           ) : project ? (
             <>
-              <Outlet />
+              {/* key: navegar para outra tela limpa o erro */}
+              <ErrorBoundary key={pathname}>
+                <Suspense fallback={<PageSkeleton />}>
+                  <Outlet />
+                </Suspense>
+              </ErrorBoundary>
               <CreateIssueDialog />
               <CommandPalette />
             </>
@@ -50,6 +54,15 @@ export function AppShell() {
           )}
         </main>
       </div>
+    </div>
+  )
+}
+
+function PageSkeleton() {
+  return (
+    <div className="space-y-3 p-6">
+      <Skeleton className="h-8 w-48" />
+      <Skeleton className="h-32 w-full" />
     </div>
   )
 }

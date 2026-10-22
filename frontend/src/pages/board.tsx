@@ -77,7 +77,7 @@ function Board({ sprint }: { sprint: Sprint }) {
 
   return (
     <div className="flex h-full flex-col gap-4 p-4 md:p-6">
-      <div className="flex flex-wrap items-start gap-4 rounded-lg border bg-card p-4">
+      <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 sm:flex-row sm:items-start">
         <div className="min-w-0 flex-1 space-y-1">
           <div className="flex items-center gap-2">
             <h1 className="text-base font-semibold">{sprint.name}</h1>
@@ -105,7 +105,7 @@ function Board({ sprint }: { sprint: Sprint }) {
             )}
           </p>
         </div>
-        <div className="w-48 space-y-1.5">
+        <div className="w-full space-y-1.5 sm:w-48">
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>Progresso</span>
             <span className="tabular-nums">
@@ -114,7 +114,7 @@ function Board({ sprint }: { sprint: Sprint }) {
           </div>
           <Progress value={total ? (done / total) * 100 : 0} className="h-1.5" />
         </div>
-        <Button size="sm" onClick={() => setCompleting(true)}>
+        <Button size="sm" className="self-start" onClick={() => setCompleting(true)}>
           Concluir sprint
         </Button>
       </div>
@@ -125,7 +125,7 @@ function Board({ sprint }: { sprint: Sprint }) {
         <ColumnsSkeleton />
       ) : (
         <DndContext {...dnd.dndProps}>
-          <div className="grid min-h-0 flex-1 auto-cols-[minmax(260px,1fr)] grid-flow-col gap-3 overflow-x-auto pb-2">
+          <div className="grid min-h-0 flex-1 snap-x auto-cols-[minmax(272px,1fr)] grid-flow-col gap-3 overflow-x-auto pb-2">
             {BOARD_COLUMNS.map((status) => (
               <Column
                 key={status}
@@ -173,7 +173,7 @@ function Column({
   return (
     <section
       className={cn(
-        'flex min-h-0 flex-col rounded-lg bg-muted/40 transition-colors',
+        'flex min-h-0 snap-start flex-col rounded-lg bg-muted/40 transition-colors',
         isOver && 'bg-primary/5 ring-1 ring-primary/30',
       )}
     >
