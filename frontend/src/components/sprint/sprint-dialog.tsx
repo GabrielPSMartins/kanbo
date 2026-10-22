@@ -66,7 +66,6 @@ function SprintForm({ sprint, onDone }: { sprint?: Sprint; onDone: () => void })
         toast.success(sprint ? 'Sprint atualizada' : `${name} criada`)
         onDone()
       },
-      onError: (err: Error) => toast.error(err.message),
     }
     if (sprint) update.mutate({ id: sprint.id, body }, opts)
     else create.mutate(body, opts)

@@ -15,10 +15,10 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: { staleTime: 30_000, retry: 1 },
   },
-  // Toast de erro padrão para qualquer mutation (mutations que tratam o erro definem meta.silent)
+  // Toast de erro para qualquer mutation que falhar (use meta.silent para suprimir)
   mutationCache: new MutationCache({
     onError: (error, _vars, _ctx, mutation) => {
-      if (!mutation.meta?.silent && !mutation.options.onError) toast.error(error.message)
+      if (!mutation.meta?.silent) toast.error(error.message)
     },
   }),
 })

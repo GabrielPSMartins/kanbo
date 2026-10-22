@@ -66,8 +66,8 @@ function CompleteSprintForm({ sprint, onDone }: { sprint: Sprint; onDone: () => 
         description: `${sprint.done_points} de ${sprint.total_points} pontos entregues`,
       })
       onDone()
-    } catch (err) {
-      toast.error((err as Error).message)
+    } catch {
+      // erro já exibido pelo toast global de mutations
     }
   }
 

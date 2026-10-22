@@ -25,7 +25,6 @@ export function CreateProjectDialog({ open, onOpenChange }: { open: boolean; onO
           setKey('')
           toast.success(`Projeto ${p.name} criado`)
         },
-        onError: (err) => toast.error(err.message),
       },
     )
   }

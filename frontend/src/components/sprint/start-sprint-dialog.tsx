@@ -59,7 +59,6 @@ function StartSprintForm({ sprint, onDone }: { sprint: Sprint; onDone: () => voi
           onDone()
           navigate('/board')
         },
-        onError: (err) => toast.error(err.message),
       },
     )
   }

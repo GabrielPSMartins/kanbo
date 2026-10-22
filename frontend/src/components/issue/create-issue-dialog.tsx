@@ -79,7 +79,6 @@ function CreateIssueForm({ defaults, onClose }: { defaults: Partial<IssueCreate>
         if (createMore) setDraft((d) => ({ ...d, title: '', description: '' }))
         else closeCreateIssue()
       },
-      onError: (err) => toast.error(err.message),
     })
   }
 
