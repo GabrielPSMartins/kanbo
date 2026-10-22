@@ -15,7 +15,7 @@ from app.models import (
 from app.models.base import now
 from app.repositories import issues as issue_repo
 from app.repositories.base import get_or_404
-from app.schemas.issue import IssueCreate, IssueUpdate
+from app.schemas.issue import IssueCreate, IssueMove, IssueUpdate
 from app.services import activity
 
 POSITION_STEP = 1024.0
@@ -187,3 +187,70 @@ def delete_issue(db: Session, issue_id: int) -> None:
     issue = get_or_404(db, Issue, issue_id, "Issue")
     db.delete(issue)
     db.commit()
+
+
+MIN_GAP = 1e-6
+
+
+def _neighbor(db: Session, issue: Issue, neighbor_id: int | None) -> Issue | None:
+    if neighbor_id is None:
+        return None
+    if neighbor_id == issue.id:
+        raise AppError("Uma issue não pode ser vizinha de si mesma", "invalid_move")
+    other = db.get(Issue, neighbor_id)
+    if other is None or other.project_id != issue.project_id:
+        raise NotFoundError(f"Issue vizinha {neighbor_id} não encontrada")
+    return other
+
+
+def _renormalize(db: Session, project_id: int, sprint_id: int | None) -> None:
+    """Redistribui as posições de uma seção (sprint ou backlog) em passos uniformes."""
+    stmt = select(Issue).where(Issue.project_id == project_id)
+    stmt = stmt.where(
+        Issue.sprint_id.is_(None) if sprint_id is None else Issue.sprint_id == sprint_id
+    )
+    for i, item in enumerate(db.scalars(stmt.order_by(Issue.position, Issue.id)), start=1):
+        item.position = i * POSITION_STEP
+    db.flush()
+
+
+def _position_between(before: Issue | None, after: Issue | None) -> float | None:
+    """Posição entre os vizinhos; None se não houver espaço (precisa renormalizar)."""
+    if before and after:
+        lo, hi = before.position, after.position
+        if hi - lo < MIN_GAP:
+            return None
+        return (lo + hi) / 2
+    if before:
+        return before.position + POSITION_STEP
+    if after:
+        return after.position - POSITION_STEP
+    return None
+
+
+def move_issue(db: Session, issue_id: int, data: IssueMove) -> Issue:
+    """Drag-and-drop: muda status e/ou sprint e reposiciona entre `before_id` (acima)
+    e `after_id` (abaixo). Position é float, então normalmente só a issue movida muda."""
+    issue = get_issue(db, issue_id)
+    fields = data.model_fields_set
+
+    if "sprint_id" in fields and data.sprint_id != issue.sprint_id:
+        _validate_sprint(db, issue.project_id, data.sprint_id)
+        set_sprint(db, issue, data.sprint_id, adjust_status=data.status is None)
+    if data.status is not None:
+        set_status(db, issue, data.status)
+
+    before = _neighbor(db, issue, data.before_id)
+    after = _neighbor(db, issue, data.after_id)
+    if before is None and after is None:
+        issue.position = end_position(db, issue.project_id, issue.sprint_id)
+    else:
+        pos = _position_between(before, after)
+        if pos is None:
+            _renormalize(db, issue.project_id, issue.sprint_id)
+            pos = _position_between(before, after)
+        issue.position = pos
+
+    issue.updated_at = now()
+    db.commit()
+    return get_issue(db, issue.id)

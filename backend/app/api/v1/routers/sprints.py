@@ -4,8 +4,16 @@ from app.api.deps import DB, ProjectDep
 from app.models import Sprint, SprintStatus
 from app.repositories import sprints as sprint_repo
 from app.repositories.base import get_or_404
-from app.schemas.sprint import SprintCreate, SprintUpdate, SprintWithStats
+from app.schemas.sprint import (
+    Burndown,
+    SprintClose,
+    SprintCreate,
+    SprintStart,
+    SprintUpdate,
+    SprintWithStats,
+)
 from app.services import sprint_service
+from app.services.burndown import sprint_burndown
 
 router = APIRouter(tags=["sprints"])
 
@@ -39,3 +47,20 @@ def update_sprint(sprint_id: int, data: SprintUpdate, db: DB):
 @router.delete("/sprints/{sprint_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_sprint(sprint_id: int, db: DB):
     sprint_service.delete_sprint(db, sprint_id)
+
+
+@router.post("/sprints/{sprint_id}/start", response_model=SprintWithStats)
+def start_sprint(sprint_id: int, db: DB, data: SprintStart | None = None):
+    sprint = sprint_service.start_sprint(db, sprint_id, data or SprintStart())
+    return sprint_service.with_stats(db, [sprint])[0]
+
+
+@router.post("/sprints/{sprint_id}/close", response_model=SprintWithStats)
+def close_sprint(sprint_id: int, data: SprintClose, db: DB):
+    sprint = sprint_service.close_sprint(db, sprint_id, data)
+    return sprint_service.with_stats(db, [sprint])[0]
+
+
+@router.get("/sprints/{sprint_id}/burndown", response_model=Burndown)
+def get_burndown(sprint_id: int, db: DB):
+    return sprint_burndown(db, get_or_404(db, Sprint, sprint_id, "Sprint"))

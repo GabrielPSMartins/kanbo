@@ -8,7 +8,7 @@ from app.repositories import issues as issue_repo
 from app.repositories.issues import IssueFilters
 from app.schemas.activity import ActivityRead
 from app.schemas.common import Page
-from app.schemas.issue import IssueCreate, IssueDetail, IssueRead, IssueUpdate
+from app.schemas.issue import IssueCreate, IssueDetail, IssueMove, IssueRead, IssueUpdate
 from app.services import issue_service
 
 router = APIRouter(tags=["issues"])
@@ -64,6 +64,11 @@ def get_issue(issue_id: int, db: DB):
 @router.patch("/issues/{issue_id}", response_model=IssueDetail)
 def update_issue(issue_id: int, data: IssueUpdate, db: DB):
     return issue_service.update_issue(db, issue_id, data)
+
+
+@router.post("/issues/{issue_id}/move", response_model=IssueDetail)
+def move_issue(issue_id: int, data: IssueMove, db: DB):
+    return issue_service.move_issue(db, issue_id, data)
 
 
 @router.delete("/issues/{issue_id}", status_code=status.HTTP_204_NO_CONTENT)
